@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Settings, User, Bell, Shield, CreditCard, Globe, Palette, Mail } from "lucide-react";
+import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Globe, Palette, Mail } from "lucide-react";
 
 const Settings = () => {
   return (
@@ -25,7 +25,7 @@ const Settings = () => {
       <Tabs defaultValue="general" className="space-y-6">
         <TabsList className="glass-effect border border-border/50">
           <TabsTrigger value="general" className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
+            <SettingsIcon className="w-4 h-4" />
             General
           </TabsTrigger>
           <TabsTrigger value="profile" className="flex items-center gap-2">

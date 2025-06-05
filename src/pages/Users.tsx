@@ -1,11 +1,10 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Users, Search, Filter, MoreHorizontal, UserPlus, Mail, Phone, Calendar } from "lucide-react";
+import { Users as UsersIcon, Search, Filter, MoreHorizontal, UserPlus, Mail, Phone, Calendar } from "lucide-react";
 
 const users = [
   {
@@ -102,7 +101,7 @@ const Users = () => {
           <Card key={index} className="glass-effect border-border/50 hover:border-blue-500/30 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
+              <UsersIcon className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-400">{stat.value}</div>

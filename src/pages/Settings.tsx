@@ -1,4 +1,4 @@
-
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,22 +7,148 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Globe, Palette, Mail } from "lucide-react";
+import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Globe, Palette, Mail, Loader2 } from "lucide-react";
+import { AuthService, UserProfile } from "@/services/authService";
+import { useToast } from "@/components/ui/use-toast";
 
 const Settings = () => {
+  const { toast } = useToast();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [profileForm, setProfileForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  // Fetch user profile on component mount
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  // Function to fetch user profile
+  const fetchUserProfile = async () => {
+    try {
+      setLoading(true);
+      const userData = await AuthService.getUserProfile();
+      setUserProfile(userData);
+      
+      // Initialize form values with user data
+      setProfileForm({
+        first_name: userData.first_name || "",
+        last_name: userData.last_name || "",
+        email: userData.email || "",
+        phone_number: userData.phone_number || "",
+      });
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load user profile. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle profile form changes
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setProfileForm(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  // Handle password form changes
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setPasswordForm(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  // Handle profile update
+  const handleUpdateProfile = async () => {
+    try {
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
+      });
+      // Here we would call an API to update the profile
+      // For now, just show a success toast
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Handle password update
+  const handleUpdatePassword = async () => {
+    try {
+      if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+        toast({
+          title: "Error",
+          description: "New password and confirmation do not match.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Here we would call an API to update the password
+      
+      toast({
+        title: "Password Updated",
+        description: "Your password has been successfully updated.",
+      });
+      
+      // Reset form
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update password. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold gradient-text">Settings</h2>
-          <p className="text-muted-foreground">Manage your marketplace configuration and preferences</p>
+          <p className="text-muted-foreground">Manage your Red sea  configuration and preferences</p>
         </div>
         <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30">
           All Systems Operational
         </Badge>
       </div>
 
-      <Tabs defaultValue="general" className="space-y-6">
+      <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="glass-effect border border-border/50">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <SettingsIcon className="w-4 h-4" />
@@ -51,19 +177,19 @@ const Settings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-blue-500" />
-                Marketplace Settings
+                Red sea  Settings
               </CardTitle>
-              <CardDescription>Configure your marketplace basic settings</CardDescription>
+              <CardDescription>Configure your Red sea  basic settings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="marketplace-name">Marketplace Name</Label>
-                  <Input id="marketplace-name" defaultValue="B2C MarketPlace" className="bg-background/50" />
+                  <Label htmlFor="Red sea -name">Red sea  Name</Label>
+                  <Input id="Red sea -name" defaultValue="B2C Red sea " className="bg-background/50" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="marketplace-url">Website URL</Label>
-                  <Input id="marketplace-url" defaultValue="https://marketplace.com" className="bg-background/50" />
+                  <Label htmlFor="Red sea -url">Website URL</Label>
+                  <Input id="Red sea -url" defaultValue="https://Red sea .com" className="bg-background/50" />
                 </div>
               </div>
               
@@ -71,7 +197,7 @@ const Settings = () => {
                 <Label htmlFor="description">Description</Label>
                 <Input 
                   id="description" 
-                  defaultValue="Your premier B2C marketplace for quality products" 
+                  defaultValue="Your premier B2C Red sea  for quality products" 
                   className="bg-background/50" 
                 />
               </div>
@@ -84,7 +210,7 @@ const Settings = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
-                      <p className="text-sm text-muted-foreground">Put marketplace in maintenance mode</p>
+                      <p className="text-sm text-muted-foreground">Put Red sea  in maintenance mode</p>
                     </div>
                     <Switch id="maintenance-mode" />
                   </div>
@@ -119,9 +245,9 @@ const Settings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5 text-purple-500" />
-                Admin Profile
+                {userProfile ? `${userProfile.type} Profile` : "Admin Profile"}
               </CardTitle>
-              <CardDescription>Manage your admin account information</CardDescription>
+              <CardDescription>Manage your account information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
@@ -136,35 +262,155 @@ const Settings = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="first-name">First Name</Label>
-                  <Input id="first-name" defaultValue="Admin" className="bg-background/50" />
+                  <Label htmlFor="first_name">First Name</Label>
+                  <Input 
+                    id="first_name" 
+                    value={profileForm.first_name}
+                    onChange={handleProfileChange}
+                    className="bg-background/50" 
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="last-name">Last Name</Label>
-                  <Input id="last-name" defaultValue="User" className="bg-background/50" />
+                  <Label htmlFor="last_name">Last Name</Label>
+                  <Input 
+                    id="last_name" 
+                    value={profileForm.last_name}
+                    onChange={handleProfileChange}
+                    className="bg-background/50" 
+                  />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue="admin@marketplace.com" className="bg-background/50" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={profileForm.email}
+                  onChange={handleProfileChange}
+                  className="bg-background/50" 
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" defaultValue="+1 (555) 123-4567" className="bg-background/50" />
+                <Label htmlFor="phone_number">Phone Number</Label>
+                <Input 
+                  id="phone_number" 
+                  value={profileForm.phone_number || ""}
+                  onChange={handleProfileChange}
+                  className="bg-background/50" 
+                />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
-                <Input id="timezone" defaultValue="America/New_York" className="bg-background/50" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="user_type">User Type</Label>
+                  <Input 
+                    id="user_type" 
+                    value={userProfile?.type || ""}
+                    disabled
+                    className="bg-background/50" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="user_status">Status</Label>
+                  <Input 
+                    id="user_status" 
+                    value={userProfile?.status || ""}
+                    disabled
+                    className="bg-background/50" 
+                  />
+                </div>
               </div>
 
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-600">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pref_language">Preferred Language</Label>
+                  <Input 
+                    id="pref_language" 
+                    value={userProfile?.pref_language || ""}
+                    disabled
+                    className="bg-background/50" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pref_currency">Preferred Currency</Label>
+                  <Input 
+                    id="pref_currency" 
+                    value={userProfile?.pref_currency || ""}
+                    disabled
+                    className="bg-background/50" 
+                  />
+                </div>
+              </div>
+
+              <Button 
+                className="bg-gradient-to-r from-purple-500 to-pink-600"
+                onClick={handleUpdateProfile}
+              >
                 Update Profile
               </Button>
             </CardContent>
           </Card>
+
+          {userProfile?.role && (
+            <Card className="glass-effect border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-yellow-500" />
+                  Role Information
+                </CardTitle>
+                <CardDescription>Your role and permissions</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="role_name">Role Name</Label>
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        id="role_name" 
+                        value={userProfile.role.name || ""}
+                        disabled
+                        className="bg-background/50" 
+                      />
+                      <Badge 
+                        variant="outline" 
+                        className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                      >
+                        {userProfile.role.type}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role_description">Role Description</Label>
+                    <Input 
+                      id="role_description" 
+                      value={userProfile.role.description || ""}
+                      disabled
+                      className="bg-background/50" 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Access Permissions</Label>
+                  <div className="max-h-32 overflow-y-auto p-2 bg-background/50 rounded-md border border-border/50">
+                    <div className="flex flex-wrap gap-2">
+                      {userProfile.role.access_rules.map((rule, index) => (
+                        <Badge 
+                          key={index}
+                          variant="outline" 
+                          className="bg-blue-500/20 text-blue-400 border-blue-500/30"
+                        >
+                          {rule}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">
@@ -259,15 +505,41 @@ const Settings = () => {
                 <h4 className="font-medium">Password</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="current-password">Current Password</Label>
-                    <Input id="current-password" type="password" className="bg-background/50" />
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input 
+                      id="currentPassword" 
+                      type="password" 
+                      className="bg-background/50" 
+                      value={passwordForm.currentPassword}
+                      onChange={handlePasswordChange}
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="new-password">New Password</Label>
-                    <Input id="new-password" type="password" className="bg-background/50" />
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input 
+                      id="newPassword" 
+                      type="password" 
+                      className="bg-background/50" 
+                      value={passwordForm.newPassword}
+                      onChange={handlePasswordChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input 
+                      id="confirmPassword" 
+                      type="password" 
+                      className="bg-background/50" 
+                      value={passwordForm.confirmPassword}
+                      onChange={handlePasswordChange}
+                    />
                   </div>
                 </div>
-                <Button variant="outline" className="glass-effect">
+                <Button 
+                  variant="outline" 
+                  className="glass-effect"
+                  onClick={handleUpdatePassword}
+                >
                   Update Password
                 </Button>
               </div>

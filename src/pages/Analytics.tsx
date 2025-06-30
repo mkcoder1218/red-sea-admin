@@ -38,7 +38,7 @@ const Analytics = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold gradient-text">Analytics</h2>
-          <p className="text-muted-foreground">Detailed insights into your marketplace performance</p>
+          <p className="text-muted-foreground">Detailed insights into your Red sea  performance</p>
         </div>
         <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30">
           Updated 5 min ago

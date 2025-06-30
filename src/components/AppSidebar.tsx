@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -11,14 +10,16 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar"
-import { 
-  ChartBar, 
-  ChartPie, 
-  Users, 
-  Package, 
-  Truck, 
-  Map, 
-  Settings 
+import {
+  ChartBar,
+  ChartPie,
+  Users,
+  Package,
+  Package2,
+  Truck,
+  Map,
+  Settings,
+  Image
 } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 
@@ -39,6 +40,11 @@ const menuItems = [
     icon: Users,
   },
   {
+    title: "Product Management",
+    url: "/products",
+    icon: Package2,
+  },
+  {
     title: "Order Management",
     url: "/orders",
     icon: Package,
@@ -52,6 +58,11 @@ const menuItems = [
     title: "Delivery Map",
     url: "/map",
     icon: Map,
+  },
+  {
+    title: "Banners",
+    url: "/banners",
+    icon: Image,
   },
   {
     title: "Settings",
@@ -71,7 +82,7 @@ export function AppSidebar() {
             <Package className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold gradient-text">MarketPlace</h2>
+            <h2 className="text-lg font-bold gradient-text">Red sea </h2>
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           </div>
         </div>
@@ -113,7 +124,7 @@ export function AppSidebar() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">Admin User</p>
-            <p className="text-xs text-muted-foreground">admin@marketplace.com</p>
+            <p className="text-xs text-muted-foreground">admin@Red sea .com</p>
           </div>
         </div>
       </SidebarFooter>

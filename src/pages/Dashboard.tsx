@@ -1,8 +1,17 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
-import { ChartBar, Users, Package, TrendingUp, DollarSign, Truck } from "lucide-react";
+import { ChartBar, Users, Package, TrendingUp, DollarSign, Truck, LogOut, Info } from "lucide-react";
+import ReduxExample from "@/components/ReduxExample";
+import ApiExample from "@/components/ApiExample";
+import PersistenceExample from "@/components/PersistenceExample";
+import UnauthorizedTest from "@/components/UnauthorizedTest";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { logout } from "@/store/slices/authSlice";
+import { AuthService } from "@/services";
 
 const salesData = [
   { name: 'Jan', sales: 4000, orders: 240 },
@@ -29,16 +38,50 @@ const recentOrders = [
 ];
 
 const Dashboard = () => {
+  const dispatch = useAppDispatch()
+  const { user } = useAppSelector((state) => state.auth)
+
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout()
+      dispatch(logout())
+    } catch (error) {
+      console.error('Logout error:', error)
+      dispatch(logout()) // Force logout even if API call fails
+    }
+  }
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Instructions for Testing Login Form */}
+      <Alert className="border-blue-500/30 bg-blue-500/10">
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          <strong>To test the updated login form:</strong> Click the "Logout" button below, then go to the login page.
+          You'll see empty form fields that you can fill with any credentials, plus a demo account helper.
+        </AlertDescription>
+      </Alert>
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold gradient-text">Dashboard</h2>
-          <p className="text-muted-foreground">Overview of your marketplace performance</p>
+          <p className="text-muted-foreground">
+            Welcome back, {user?.first_name} {user?.last_name}! Overview of your Red sea  performance
+          </p>
         </div>
-        <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30">
-          Live Data
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/30">
+            Live Data
+          </Badge>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 text-red-400 border-red-500/30 hover:bg-red-500/10"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout to Test Login Form
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -157,7 +200,7 @@ const Dashboard = () => {
       <Card className="glass-effect border-border/50">
         <CardHeader>
           <CardTitle>Recent Orders</CardTitle>
-          <CardDescription>Latest orders from your marketplace</CardDescription>
+          <CardDescription>Latest orders from your Red sea </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -191,6 +234,18 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Redux Example */}
+      <ReduxExample />
+
+      {/* API Example */}
+      <ApiExample />
+
+      {/* Persistence Example */}
+      <PersistenceExample />
+
+      {/* Unauthorized Handling Test */}
+      <UnauthorizedTest />
     </div>
   );
 };

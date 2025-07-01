@@ -215,7 +215,6 @@ const Products = () => {
 
         fileIds = completedFiles.map(f => f.id!);
       }
-alert('file id'+fileIds)
       // Step 2: Register the product with file IDs
       const productData = {
         product: {

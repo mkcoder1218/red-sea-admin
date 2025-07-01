@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import ProductsPagination from "@/components/ProductsPagination";
 import { Product, ProductService } from "@/services/productService";
-import { FileService, UploadProgress } from "@/services/fileService";
+import { FileService, type UploadProgress } from "@/services/fileService";
 import { useAppDispatch } from "@/store/hooks";
 import { addNotification } from "@/store/slices/uiSlice";
 import { apiMethods } from "@/lib/api";
@@ -215,7 +215,7 @@ const Products = () => {
 
         fileIds = completedFiles.map(f => f.id!);
       }
-
+alert('file id'+fileIds)
       // Step 2: Register the product with file IDs
       const productData = {
         product: {
@@ -279,54 +279,60 @@ const Products = () => {
     setUploadedFiles(prev => [...prev, ...newFiles]);
     setIsUploading(true);
 
-    // Upload files one by one
-    for (let i = 0; i < newFiles.length; i++) {
-      const fileState = newFiles[i];
-      const fileIndex = uploadedFiles.length + i;
+    // Process files in batch using the new uploadFiles method
+    try {
+      const filesArray = Array.from(files);
+      const response = await FileService.uploadFiles(
+        filesArray,
+        (progress: UploadProgress) => {
+          // Update progress for all files
+          setUploadedFiles(prev => prev.map((f, idx) => {
+            const currentFileIndex = uploadedFiles.length + idx;
+            if (currentFileIndex >= uploadedFiles.length && currentFileIndex < uploadedFiles.length + newFiles.length) {
+              return { ...f, status: 'uploading' as const, progress: progress.percentage };
+            }
+            return f;
+          }));
+        }
+      );
 
-      try {
-        // Update status to uploading
-        setUploadedFiles(prev => prev.map((f, idx) =>
-          idx === fileIndex ? { ...f, status: 'uploading' as const } : f
-        ));
+      // Update all uploaded files with their respective IDs from the response
+      for (let i = 0; i < response.data.length; i++) {
+        const fileIndex = uploadedFiles.length + i;
+        const fileData = response.data[i];
 
-        const response = await FileService.uploadSingleFile(
-          fileState.file,
-          (progress: UploadProgress) => {
-            // Update progress
-            setUploadedFiles(prev => prev.map((f, idx) =>
-              idx === fileIndex ? { ...f, progress: progress.percentage } : f
-            ));
-          }
-        );
+        if (fileIndex < newFiles.length + uploadedFiles.length) {
+          setUploadedFiles(prev => prev.map((f, idx) =>
+            idx === fileIndex ? {
+              ...f,
+              status: 'completed' as const,
+              id: fileData.id,
+              progress: 100
+            } : f
+          ));
+        }
+      }
 
-        // Update with completed status and file ID
-        setUploadedFiles(prev => prev.map((f, idx) =>
-          idx === fileIndex ? {
-            ...f,
-            status: 'completed' as const,
-            id: response.data.id,
-            progress: 100
-          } : f
-        ));
-
-      } catch (error) {
-        console.error(`Error uploading file ${fileState.file.name}:`, error);
-
-        // Update with error status
-        setUploadedFiles(prev => prev.map((f, idx) =>
-          idx === fileIndex ? {
+    } catch (error) {
+      // Mark all new files as failed
+      const newFilesStartIndex = uploadedFiles.length;
+      setUploadedFiles(prev => prev.map((f, idx) => {
+        if (idx >= newFilesStartIndex && idx < newFilesStartIndex + newFiles.length) {
+          return {
             ...f,
             status: 'error' as const,
             error: error instanceof Error ? error.message : 'Upload failed'
-          } : f
-        ));
-      }
+          };
+        }
+        return f;
+      }));
+      
+      console.error("Error uploading files:", error);
+    } finally {
+      setIsUploading(false);
+      // Clear the input
+      event.target.value = '';
     }
-
-    setIsUploading(false);
-    // Clear the input
-    event.target.value = '';
   };
 
   const removeFile = (index: number) => {
@@ -343,8 +349,8 @@ const Products = () => {
         idx === index ? { ...f, status: 'uploading' as const, error: undefined, progress: 0 } : f
       ));
 
-      const response = await FileService.uploadSingleFile(
-        fileState.file,
+      const response = await FileService.uploadFiles(
+        [fileState.file],
         (progress: UploadProgress) => {
           setUploadedFiles(prev => prev.map((f, idx) =>
             idx === index ? { ...f, progress: progress.percentage } : f
@@ -357,7 +363,7 @@ const Products = () => {
         idx === index ? {
           ...f,
           status: 'completed' as const,
-          id: response.data.id,
+          id: response.data[0].id,
           progress: 100
         } : f
       ));

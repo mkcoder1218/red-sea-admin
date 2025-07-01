@@ -4,14 +4,18 @@ import { apiMethods, handleApiError } from '@/lib/api'
 export interface FileUploadResponse {
   status: number
   message: string
-  data: {
-    id: string
-    path: string
-    originalName: string
-    size: number
-    mimeType: string
-    createdAt: string
-  }
+  data: FileData[]
+}
+
+export interface FileData {
+  id: string
+  name: string
+  type: string
+  size: number
+  path: string
+  updatedAt: string
+  createdAt: string
+  deletedAt: null | string
 }
 
 export interface UploadProgress {
@@ -22,14 +26,16 @@ export interface UploadProgress {
 
 // File service class
 export class FileService {
-  // Upload single file to /files/single endpoint
-  static async uploadSingleFile(
-    files: File,
+  // Upload multiple files
+  static async uploadFiles(
+    files: File[],
     onProgress?: (progress: UploadProgress) => void
   ): Promise<FileUploadResponse> {
     try {
       const formData = new FormData()
-      formData.append('files', files)
+      files.forEach(file => {
+        formData.append('files', file)
+      })
 
       const response = await apiMethods.post<FileUploadResponse>('/files/multiple', formData, {
         headers: {
@@ -53,32 +59,6 @@ export class FileService {
     }
   }
 
-  // Upload multiple files sequentially
-  static async uploadMultipleFiles(
-    files: File[],
-    onProgress?: (fileIndex: number, progress: UploadProgress) => void,
-    onFileComplete?: (fileIndex: number, fileId: string) => void
-  ): Promise<string[]> {
-    const fileIds: string[] = []
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      
-      try {
-        const response = await this.uploadSingleFile(file, (progress) => {
-          onProgress?.(i, progress)
-        })
-        
-        fileIds.push(response.data.id)
-        onFileComplete?.(i, response.data.id)
-      } catch (error) {
-        throw new Error(`Failed to upload file ${file.name}: ${error}`)
-      }
-    }
-
-    return fileIds
-  }
-
   // Delete file by ID
   static async deleteFile(fileId: string): Promise<{ message: string }> {
     try {
@@ -89,7 +69,7 @@ export class FileService {
   }
 
   // Get file info by ID
-  static async getFileInfo(fileId: string): Promise<FileUploadResponse['data']> {
+  static async getFileInfo(fileId: string): Promise<FileData> {
     try {
       return await apiMethods.get(`/files/${fileId}`)
     } catch (error) {

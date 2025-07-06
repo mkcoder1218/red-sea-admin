@@ -5,6 +5,7 @@ export { ProductService } from './productService'
 export { FileService } from './fileService'
 export { OrderService } from './orderService'
 export { BannerService } from './bannerService'
+export { DashboardService } from './dashboardService'
 
 // Export types
 export type {
@@ -58,3 +59,10 @@ export type {
   BannerListResponse,
   BannerResponse
 } from './bannerService'
+
+export type {
+  DashboardStats,
+  DashboardStatsResponse,
+  OrderAnalytics,
+  OrderAnalyticsResponse
+} from './dashboardService'

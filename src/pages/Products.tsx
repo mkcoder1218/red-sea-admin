@@ -50,13 +50,24 @@ interface CategoryResponse {
   };
 }
 
-// Mock data removed - now using real API data
+// Interface for product analytics response
+interface ProductAnalyticsResponse {
+  status: number;
+  message: string;
+  data: {
+    totalProducts: number;
+    activeProducts: number;
+    outOfStock: number;
+    totalRevenue: number;
+  };
+}
 
-const productStats = [
-  { label: "Total Products", value: "1,234", change: "+12.3%", trend: "up", icon: Package2 },
-  { label: "Active Products", value: "987", change: "+8.7%", trend: "up", icon: TrendingUp },
-  { label: "Out of Stock", value: "23", change: "-15.2%", trend: "down", icon: TrendingDown },
-  { label: "Total Revenue", value: "$234,567", change: "+22.1%", trend: "up", icon: DollarSign },
+// Default product stats
+const defaultProductStats = [
+  { label: "Total Products", value: "0", change: "0%", trend: "up", icon: Package2 },
+  { label: "Active Products", value: "0", change: "0%", trend: "up", icon: TrendingUp },
+  { label: "Out of Stock", value: "0", change: "0%", trend: "down", icon: TrendingDown },
+  { label: "Total Revenue", value: "$0", change: "0%", trend: "up", icon: DollarSign },
 ];
 
 // File upload state interface
@@ -77,6 +88,8 @@ const Products = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [productStats, setProductStats] = useState([...defaultProductStats]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
   // Use the products hook for API integration
   const {
@@ -131,6 +144,66 @@ const Products = () => {
     };
 
     fetchCategories();
+  }, [dispatch]);
+
+  // Fetch product analytics function
+  const fetchProductAnalytics = async () => {
+    try {
+      setAnalyticsLoading(true);
+      const response = await apiMethods.get<ProductAnalyticsResponse>('/dashboard/product-analytics');
+      
+      if (response.status === 200 && response.data) {
+        const { totalProducts, activeProducts, outOfStock, totalRevenue } = response.data;
+        
+        // Format the data for the stats cards
+        const updatedStats = [
+          { 
+            label: "Total Products", 
+            value: totalProducts.toLocaleString(), 
+            change: "0%", // We don't have change data from the API
+            trend: "up", 
+            icon: Package2 
+          },
+          { 
+            label: "Active Products", 
+            value: activeProducts.toLocaleString(), 
+            change: "0%", 
+            trend: "up", 
+            icon: TrendingUp 
+          },
+          { 
+            label: "Out of Stock", 
+            value: outOfStock.toLocaleString(), 
+            change: "0%", 
+            trend: "down", 
+            icon: TrendingDown 
+          },
+          { 
+            label: "Total Revenue", 
+            value: `$${totalRevenue.toLocaleString()}`, 
+            change: "0%", 
+            trend: "up", 
+            icon: DollarSign 
+          },
+        ];
+        
+        setProductStats(updatedStats);
+      }
+    } catch (error) {
+      console.error('Error fetching product analytics:', error);
+      dispatch(addNotification({
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to load product analytics'
+      }));
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
+  // Fetch product analytics when component mounts
+  useEffect(() => {
+    fetchProductAnalytics();
   }, [dispatch]);
 
   // Helper functions for product display
@@ -247,8 +320,11 @@ const Products = () => {
       form.reset();
       setUploadedFiles([]);
 
-      // Refresh products list
+      // Refresh products list and analytics
       refetchProducts();
+      
+      // Refresh product analytics
+      fetchProductAnalytics();
 
     } catch (error) {
       console.error("Error creating product:", error);
@@ -708,27 +784,48 @@ const Products = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {productStats.map((stat, index) => (
-          <Card key={index} className="glass-effect border-border/50 hover:border-blue-500/30 transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className={`text-sm flex items-center gap-1 ${
-                    stat.trend === 'up' ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {stat.trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                    {stat.change}
-                  </p>
+        {analyticsLoading ? (
+          // Show skeleton loading cards
+          Array(4).fill(0).map((_, index) => (
+            <Card key={index} className="glass-effect border-border/50 hover:border-blue-500/30 transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 bg-muted/60 rounded animate-pulse"></div>
+                    <div className="h-8 w-16 bg-muted/80 rounded animate-pulse"></div>
+                    <div className="h-4 w-12 bg-muted/60 rounded animate-pulse"></div>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/40 to-purple-600/40 rounded-lg flex items-center justify-center animate-pulse">
+                    <Loader2 className="w-6 h-6 text-white/60 animate-spin" />
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <stat.icon className="w-6 h-6 text-white" />
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          // Show actual stats
+          productStats.map((stat, index) => (
+            <Card key={index} className="glass-effect border-border/50 hover:border-blue-500/30 transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                    <p className="text-2xl font-bold">{stat.value}</p>
+                    <p className={`text-sm flex items-center gap-1 ${
+                      stat.trend === 'up' ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      {stat.trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                      {stat.change}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <stat.icon className="w-6 h-6 text-white" />
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       {/* Search and Filters */}

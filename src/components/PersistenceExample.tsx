@@ -119,8 +119,8 @@ const PersistenceExample: React.FC = () => {
                 </Badge>
               </h4>
               <div className="text-sm space-y-1">
-                <p>User: {user ? `${user.name} (${user.email})` : 'None'}</p>
-                <p>Role: {user?.role || 'N/A'}</p>
+                <p>User: {user ? `${user.first_name} ${user.last_name} (${user.email})` : 'None'}</p>
+                <p>Role: {user?.role?.name || 'N/A'}</p>
               </div>
             </div>
 

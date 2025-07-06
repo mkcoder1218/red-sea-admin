@@ -5,14 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Package, Search, Filter, MoreHorizontal, Eye, Truck, DollarSign, Calendar, Loader2 } from "lucide-react";
-import { OrderService, Order } from "@/services";
-
-const orderStats = [
-  { label: "Total Orders", value: "2,345", change: "+12.3%", icon: Package },
-  { label: "Pending Orders", value: "89", change: "-5.2%", icon: Calendar },
-  { label: "Total Revenue", value: "$45,231", change: "+18.7%", icon: DollarSign },
-  { label: "Shipped Today", value: "34", change: "+8.1%", icon: Truck },
-];
+import { OrderService, Order, DashboardService } from "@/services";
 
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -21,11 +14,23 @@ const Orders = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalOrders, setTotalOrders] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [orderStats, setOrderStats] = useState([
+    { label: "Total Orders", value: "...", change: "+0.0%", icon: Package },
+    { label: "Pending Orders", value: "...", change: "0.0%", icon: Calendar },
+    { label: "Total Revenue", value: "...", change: "+0.0%", icon: DollarSign },
+    { label: "Shipped Today", value: "...", change: "0.0%", icon: Truck },
+  ]);
+  const [statsLoading, setStatsLoading] = useState<boolean>(true);
   
   // Fetch orders on component mount and when page changes
   useEffect(() => {
     fetchOrders();
   }, [currentPage]);
+
+  // Fetch order analytics on component mount
+  useEffect(() => {
+    fetchOrderAnalytics();
+  }, []);
   
   // Function to fetch orders
   const fetchOrders = async () => {
@@ -47,6 +52,36 @@ const Orders = () => {
       setError('Failed to load orders. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to fetch order analytics
+  const fetchOrderAnalytics = async () => {
+    try {
+      setStatsLoading(true);
+      const response = await DashboardService.getOrderAnalytics();
+      
+      if (response?.data) {
+        const { totalOrders, pendingOrders, totalRevenue, shippedToday } = response.data;
+        
+        // Format currency
+        const formattedRevenue = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(totalRevenue);
+        
+        setOrderStats([
+          { label: "Total Orders", value: totalOrders.toString(), change: "+12.3%", icon: Package },
+          { label: "Pending Orders", value: pendingOrders.toString(), change: "-5.2%", icon: Calendar },
+          { label: "Total Revenue", value: formattedRevenue, change: "+18.7%", icon: DollarSign },
+          { label: "Shipped Today", value: shippedToday.toString(), change: "+8.1%", icon: Truck },
+        ]);
+      }
+    } catch (err) {
+      console.error('Error fetching order analytics:', err);
+      // Keep the placeholder stats if there's an error
+    } finally {
+      setStatsLoading(false);
     }
   };
   
@@ -101,7 +136,9 @@ const Orders = () => {
               <stat.icon className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-400">{stat.value}</div>
+              <div className="text-2xl font-bold text-purple-400">
+                {statsLoading ? '...' : stat.value}
+              </div>
               <p className={`text-xs ${stat.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
                 {stat.change} from last month
               </p>

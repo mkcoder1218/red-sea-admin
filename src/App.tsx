@@ -41,7 +41,8 @@ const App = () => (
 
                   {/* Protected routes */}
                   <Route path="/" element={<AuthenticatedLayout />}>
-                    <Route index element={<DebugDashboard />} />
+                    <Route index element={<Dashboard />} />
+                    <Route path="debug" element={<DebugDashboard />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="users" element={<Users />} />
                     <Route path="products" element={<Products />} />

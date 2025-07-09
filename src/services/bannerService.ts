@@ -90,8 +90,12 @@ export class BannerService {
   // Delete a banner
   static async deleteBanner(id: string): Promise<{ message: string }> {
     try {
-      const response = await apiMethods.delete(`/banners/admin/${id}`);
-      return { message: response.message };
+      // Send the ID as payload in the config object's data property
+      const response = await apiMethods.delete(`/banners/admin`, {
+        data: { id: id } // This is the correct way to send payload with DELETE
+      });
+      // The response might have a different structure, so handle both possibilities
+      return { message: response.message || 'Banner deleted successfully' };
     } catch (error) {
       throw handleApiError(error);
     }
@@ -135,4 +139,4 @@ export class BannerService {
   }
 }
 
-export default BannerService; 
+export default BannerService;

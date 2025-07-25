@@ -460,27 +460,169 @@ const Products = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold gradient-text">Product Management</h2>
-          <p className="text-muted-foreground">Manage your Red sea  product catalog</p>
+          <h2 className="text-3xl font-bold text-foreground">Product Management</h2>
+          <p className="text-muted-foreground">Manage your Red Sea Market product catalog</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Plus className="w-4 h-4 mr-2" />
               Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto glass-effect">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold gradient-text">Add New Product</DialogTitle>
+              <DialogTitle>Add New Product</DialogTitle>
               <DialogDescription>
-                Create a new product for your Red sea . Fill in all the required information.
+                Start by uploading product images, then add basic details.
               </DialogDescription>
             </DialogHeader>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {/* Upload Section - Primary Focus */}
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div
+                      className="border-2 border-dashed border-primary/30 rounded-xl p-6 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 cursor-pointer group"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add('border-primary', 'bg-primary/15');
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-primary', 'bg-primary/15');
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-primary', 'bg-primary/15');
+                        const files = Array.from(e.dataTransfer.files);
+                        if (files.length > 0) {
+                          const event = { target: { files } } as any;
+                          handleFileUpload(event);
+                        }
+                      }}
+                    >
+                      <div className="group-hover:scale-110 transition-transform duration-300">
+                        <Upload className="w-12 h-12 mx-auto mb-3 text-primary" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">Add Product Images</h3>
+                      <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+                        Drag & drop your product images here, or click to browse.
+                        <br />
+                        <span className="text-primary font-medium">Multiple images supported</span>
+                      </p>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="file-upload"
+                        disabled={isUploading}
+                      />
+                      <Button
+                        type="button"
+                        disabled={isUploading}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
+                      >
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Uploading Images...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-5 h-5 mr-2" />
+                            Select Images
+                          </>
+                        )}
+                      </Button>
+                      {uploadedFiles.length === 0 && (
+                        <p className="text-xs text-muted-foreground mt-4">
+                          Recommended: JPG, PNG • Max 5MB each
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {uploadedFiles.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium text-foreground">
+                          Uploaded Images ({uploadedFiles.length})
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => document.getElementById('file-upload')?.click()}
+                          disabled={isUploading}
+                          className="text-primary border-primary/30 hover:bg-primary/10"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add More
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {uploadedFiles.map((fileState, index) => (
+                          <div key={index} className="relative p-3 bg-card rounded-lg border border-border hover:shadow-md transition-shadow">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs font-medium truncate flex-1">
+                                {fileState.file.name}
+                              </span>
+                              {fileState.status === 'completed' && (
+                                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                              )}
+                            </div>
+                            {fileState.status === 'uploading' && (
+                              <div className="space-y-1">
+                                <Progress value={fileState.progress} className="h-1.5" />
+                                <p className="text-xs text-muted-foreground">{fileState.progress}% uploaded</p>
+                              </div>
+                            )}
+                            {fileState.status === 'completed' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-primary font-medium">✓ Ready</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+                                  }}
+                                  className="w-5 h-5 bg-destructive/10 text-destructive rounded-full flex items-center justify-center text-xs hover:bg-destructive/20 transition-colors"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Helpful Tips */}
+                {uploadedFiles.length > 0 && uploadedFiles.length < 3 && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-primary text-sm font-bold">💡</span>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-foreground mb-1">Pro Tip</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Products with 3+ images get <span className="text-primary font-medium">40% more views</span>.
+                          Add different angles, close-ups, and lifestyle shots!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Basic Details - Simplified */}
+                <div className="space-y-3">
                   <FormField
                     control={form.control}
                     name="name"
@@ -489,69 +631,49 @@ const Products = () => {
                       <FormItem>
                         <FormLabel>Product Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter product name" {...field} className="bg-background/50" />
+                          <Input placeholder="Enter product name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="price"
-                    rules={{ required: "Price is required" }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Price</FormLabel>
-                        <FormControl>
-                          <Input placeholder="199.99" {...field} className="bg-background/50" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      rules={{ required: "Price is required" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
+                            <Input placeholder="$199.99" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  rules={{ required: "Description is required" }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Enter product description"
-                          {...field}
-                          className="bg-background/50 min-h-[100px]"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="stock"
-                    rules={{ required: "Stock quantity is required", min: { value: 0, message: "Stock cannot be negative" } }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Stock Quantity</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="50"
-                            {...field}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                            className="bg-background/50"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="stock"
+                      rules={{ required: "Stock is required" }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Stock</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="50"
+                              {...field}
+                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -562,17 +684,16 @@ const Products = () => {
                         <FormLabel>Category</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="bg-background/50">
-                              <SelectValue placeholder="Select a category" />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {/* Add category options here */}
                             {categoriesLoading ? (
                               <SelectItem value="loading" disabled>
                                 <span className="flex items-center">
                                   <Loader2 className="w-3 h-3 mr-2 animate-spin" />
-                                  Loading categories...
+                                  Loading...
                                 </span>
                               </SelectItem>
                             ) : (
@@ -588,193 +709,73 @@ const Products = () => {
                       </FormItem>
                     )}
                   />
-                </div>
-
-                <div className="space-y-4">
-                  <FormLabel>Product Images</FormLabel>
-                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                    <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Click to upload or drag and drop images
-                    </p>
-                    <Input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="file-upload"
-                      disabled={isUploading}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                      className="glass-effect"
-                      disabled={isUploading}
-                    >
-                      {isUploading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="w-4 h-4 mr-2" />
-                          Choose Files
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {uploadedFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Uploaded Files:</p>
-                      <div className="space-y-2">
-                        {uploadedFiles.map((fileState, index) => (
-                          <div key={index} className="p-3 bg-background/50 rounded-lg border">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium truncate max-w-[200px]">
-                                  {fileState.file.name}
-                                </span>
-                                {fileState.status === 'completed' && (
-                                  <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
-                                    ✓ Uploaded
-                                  </Badge>
-                                )}
-                                {fileState.status === 'uploading' && (
-                                  <Badge variant="outline" className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                    Uploading
-                                  </Badge>
-                                )}
-                                {fileState.status === 'error' && (
-                                  <Badge variant="outline" className="bg-red-500/20 text-red-400 border-red-500/30">
-                                    ✗ Failed
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-1">
-                                {fileState.status === 'error' && (
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => retryFileUpload(index)}
-                                    className="h-6 px-2"
-                                  >
-                                    Retry
-                                  </Button>
-                                )}
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeFile(index)}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <X className="w-3 h-3" />
-                                </Button>
-                              </div>
-                            </div>
-
-                            {/* Progress bar */}
-                            {(fileState.status === 'uploading' || fileState.status === 'completed') && (
-                              <Progress value={fileState.progress} className="h-1.5" />
-                            )}
-
-                            {/* Error message */}
-                            {fileState.status === 'error' && fileState.error && (
-                              <p className="text-xs text-red-400 mt-1">{fileState.error}</p>
-                            )}
-
-                            {/* File info */}
-                            <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                              <span>{(fileState.file.size / 1024 / 1024).toFixed(2)} MB</span>
-                              {fileState.id && (
-                                <span>ID: {fileState.id.substring(0, 8)}...</span>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="featured"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 glass-effect">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Featured Product</FormLabel>
-                          <FormDescription>
-                            Display this product in featured sections
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
 
                   <FormField
                     control={form.control}
-                    name="trending"
+                    name="description"
+                    rules={{ required: "Description is required" }}
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 glass-effect">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Trending Product</FormLabel>
-                          <FormDescription>
-                            Mark this product as trending
-                          </FormDescription>
-                        </div>
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <Textarea
+                            placeholder="Brief product description..."
+                            {...field}
+                            className="min-h-[80px]"
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
+
+
+
 
                 <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsDialogOpen(false);
-                      form.reset();
-                      setUploadedFiles([]);
-                    }}
-                    className="glass-effect"
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-                    disabled={isSubmitting || isUploading}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating Product...
-                      </>
-                    ) : (
-                      'Create Product'
-                    )}
-                  </Button>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      {uploadedFiles.length > 0 && (
+                        <span className="text-primary font-medium">
+                          {uploadedFiles.length} image{uploadedFiles.length !== 1 ? 's' : ''} ready
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setIsDialogOpen(false);
+                          form.reset();
+                          setUploadedFiles([]);
+                        }}
+                        disabled={isSubmitting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 px-6"
+                        disabled={isSubmitting || isUploading || uploadedFiles.length === 0}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Creating Product...
+                          </>
+                        ) : uploadedFiles.length === 0 ? (
+                          'Add Images First'
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create Product
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
                 </DialogFooter>
               </form>
             </Form>
@@ -787,7 +788,7 @@ const Products = () => {
         {analyticsLoading ? (
           // Show skeleton loading cards
           Array(4).fill(0).map((_, index) => (
-            <Card key={index} className="glass-effect border-border/50 hover:border-blue-500/30 transition-all duration-300">
+            <Card key={index} className="card-simple">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
@@ -795,7 +796,7 @@ const Products = () => {
                     <div className="h-8 w-16 bg-muted/80 rounded animate-pulse"></div>
                     <div className="h-4 w-12 bg-muted/60 rounded animate-pulse"></div>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/40 to-purple-600/40 rounded-lg flex items-center justify-center animate-pulse">
+                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center animate-pulse">
                     <Loader2 className="w-6 h-6 text-white/60 animate-spin" />
                   </div>
                 </div>
@@ -805,7 +806,7 @@ const Products = () => {
         ) : (
           // Show actual stats
           productStats.map((stat, index) => (
-            <Card key={index} className="glass-effect border-border/50 hover:border-blue-500/30 transition-all duration-300">
+            <Card key={index} className="card-simple hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -818,8 +819,8 @@ const Products = () => {
                       {stat.change}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <stat.icon className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                    <stat.icon className="w-6 h-6 text-primary-foreground" />
                   </div>
                 </div>
               </CardContent>
@@ -829,7 +830,7 @@ const Products = () => {
       </div>
 
       {/* Search and Filters */}
-      <Card className="glass-effect border-border/50">
+      <Card className="card-simple">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -846,7 +847,7 @@ const Products = () => {
                   onChange={(e) => setSearchInput(e.target.value)}
                 />
               </div>
-              <Button variant="outline" className="glass-effect">
+              <Button variant="outline">
                 <Filter className="w-4 h-4 mr-2" />
                 Filter
               </Button>
@@ -870,7 +871,7 @@ const Products = () => {
                 <Button
                   variant="outline"
                   onClick={clearProductsError}
-                  className="glass-effect"
+
                 >
                   Try Again
                 </Button>
@@ -892,7 +893,7 @@ const Products = () => {
                         setSearchInput('');
                         clearFilters();
                       }}
-                      className="mt-2 glass-effect"
+                      className="mt-2"
                     >
                       Clear Filters
                     </Button>
@@ -905,9 +906,9 @@ const Products = () => {
                   const primaryImage = getPrimaryImage(product);
 
                   return (
-                    <div key={product.id} className="flex items-center justify-between p-4 rounded-lg glass-effect border border-border/30 hover:border-blue-500/30 transition-all duration-300">
+                    <div key={product.id} className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:shadow-md transition-shadow">
                       <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center overflow-hidden">
                           {primaryImage ? (
                             <img
                               src={primaryImage}
@@ -915,7 +916,7 @@ const Products = () => {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <Package2 className="w-8 h-8 text-white" />
+                            <Package2 className="w-8 h-8 text-primary-foreground" />
                           )}
                         </div>
                         <div className="space-y-1">
@@ -964,7 +965,7 @@ const Products = () => {
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="glass-effect border border-border/50 bg-background/80 backdrop-blur-sm">
+                          <DropdownMenuContent align="end">
                             <DropdownMenuItem>
                               <Eye className="w-4 h-4 mr-2" />
                               View Details

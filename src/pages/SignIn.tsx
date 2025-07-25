@@ -88,19 +88,19 @@ const SignIn = () => {
   const displayError = localError || error
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Logo and Branding */}
         <div className="text-center space-y-2">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-            <Package className="w-8 h-8 text-white" />
+          <div className="mx-auto w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+            <Package className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold gradient-text">Red sea </h1>
+          <h1 className="text-2xl font-bold text-foreground">Red Sea Market</h1>
           <p className="text-muted-foreground">Sign in to your admin panel</p>
         </div>
 
         {/* Sign In Form */}
-        <Card className="glass-effect border-border/50 shadow-2xl">
+        <Card className="card-simple shadow-lg">
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
@@ -172,7 +172,7 @@ const SignIn = () => {
               {/* Sign In Button */}
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                 size="lg"
                 disabled={isLoading || !formData.email || !formData.password}
               >
@@ -189,9 +189,9 @@ const SignIn = () => {
 
             {/* Demo Credentials Info */}
             <div className="text-center text-sm space-y-2">
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-blue-800 dark:text-blue-200 font-medium mb-1">Demo Account</p>
-                <p className="text-xs text-blue-700 dark:text-blue-300">
+              <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+                <p className="text-primary font-medium mb-1">Demo Account</p>
+                <p className="text-xs text-muted-foreground">
                   Email: {config.demo.email}<br />
                   Password: {config.demo.password}
                 </p>
@@ -202,7 +202,7 @@ const SignIn = () => {
                   email: config.demo.email,
                   password: config.demo.password
                 })}
-                className="text-blue-600 hover:text-blue-500 text-xs underline"
+                className="text-primary hover:text-primary/80 text-xs underline"
                 disabled={isLoading}
               >
                 Use demo credentials
@@ -221,7 +221,7 @@ const SignIn = () => {
 
         {/* Footer */}
         <div className="text-center text-xs text-muted-foreground">
-          <p>© 2024 Red sea . All rights reserved.</p>
+          <p>© 2024 Red Sea Market. All rights reserved.</p>
         </div>
       </div>
     </div>

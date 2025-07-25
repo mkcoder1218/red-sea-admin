@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Users as UsersIcon, Search, Filter, MoreHorizontal, UserPlus, Mail, Phone, Calendar, Loader2 } from "lucide-react";
 import { UserService, UserData, UserStats } from "@/services/userService";
 import { useToast } from "@/components/ui/use-toast";
+import AddUserModal from "@/components/AddUserModal";
 
 const Users = () => {
   const { toast } = useToast();
@@ -18,6 +19,7 @@ const Users = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -88,13 +90,16 @@ const Users = () => {
   ] : [];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold gradient-text">User Management</h2>
-          <p className="text-muted-foreground">Manage and monitor your Red sea  users</p>
+          <h2 className="text-3xl font-bold text-foreground">User Management</h2>
+          <p className="text-muted-foreground">Manage and monitor your Red Sea users</p>
         </div>
-        <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+        <Button
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          onClick={() => setShowAddUserModal(true)}
+        >
           <UserPlus className="w-4 h-4 mr-2" />
           Add User
         </Button>
@@ -117,7 +122,7 @@ const Users = () => {
       </div>
 
       {/* Search and Filters */}
-      <Card className="glass-effect border-border/50">
+      <Card className="card-simple">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -127,14 +132,14 @@ const Users = () => {
             <div className="flex items-center gap-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search users..." 
-                  className="pl-10 w-64 bg-background/50"
+                <Input
+                  placeholder="Search users..."
+                  className="pl-10 w-64"
                   value={searchQuery}
                   onChange={handleSearchChange}
                 />
               </div>
-              <Button variant="outline" className="glass-effect">
+              <Button variant="outline">
                 <Filter className="w-4 h-4 mr-2" />
                 Filter
               </Button>
@@ -144,7 +149,7 @@ const Users = () => {
         <CardContent>
           {loading ? (
             <div className="flex justify-center items-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : users.length === 0 ? (
             <div className="text-center py-12">
@@ -153,11 +158,11 @@ const Users = () => {
           ) : (
             <div className="space-y-4">
               {users.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 rounded-lg glass-effect border border-border/30 hover:border-blue-500/30 transition-all duration-300">
+                <div key={user.id} className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={`https://ui-avatars.com/api/?name=${user.first_name}+${user.last_name}&background=random`} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                      <AvatarFallback className="bg-primary text-primary-foreground">
                         {`${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`}
                       </AvatarFallback>
                     </Avatar>
@@ -212,7 +217,7 @@ const Users = () => {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="glass-effect border border-border/50 bg-background/80 backdrop-blur-sm">
+                      <DropdownMenuContent align="end">
                         <DropdownMenuItem>View Profile</DropdownMenuItem>
                         <DropdownMenuItem>Edit User</DropdownMenuItem>
                         <DropdownMenuItem>Send Message</DropdownMenuItem>
@@ -265,6 +270,13 @@ const Users = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Add User Modal */}
+      <AddUserModal
+        open={showAddUserModal}
+        onOpenChange={setShowAddUserModal}
+        onUserAdded={fetchUsers}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -220,14 +220,14 @@ const Banners = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold gradient-text">Banner Management</h2>
+          <h2 className="text-3xl font-bold text-foreground">Banner Management</h2>
           <p className="text-muted-foreground">Create and manage promotional banners</p>
         </div>
-        <Button 
-          className="bg-gradient-to-r from-violet-500 to-indigo-600"
+        <Button
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
           onClick={handleCreateClick}
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -236,7 +236,7 @@ const Banners = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="glass-effect border border-border/50">
+        <TabsList className="bg-muted">
           <TabsTrigger value="list" className="flex items-center gap-2">
             <ImageIcon className="w-4 h-4" />
             Banner List
@@ -248,7 +248,7 @@ const Banners = () => {
         </TabsList>
 
         <TabsContent value="list" className="space-y-6">
-          <Card className="glass-effect border-border/50">
+          <Card className="card-simple">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-blue-500" />
@@ -282,7 +282,7 @@ const Banners = () => {
               ) : (
                 <div className="space-y-4">
                   {banners.map((banner) => (
-                    <div key={banner.id} className="p-4 rounded-lg glass-effect border border-border/30 hover:border-blue-500/30 transition-all duration-300">
+                    <div key={banner.id} className="p-6 rounded-lg bg-card border border-border hover:shadow-md transition-shadow">
                       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                         <div className="w-full md:w-36 h-36 bg-background/50 rounded overflow-hidden">
                           {banner.image_url ? (
@@ -356,255 +356,240 @@ const Banners = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="create" className="space-y-6">
-          <form onSubmit={handleSubmit}>
-            <Card className="glass-effect border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-violet-500" />
-                  Create New Banner
-                </CardTitle>
-                <CardDescription>Fill in the details to create a promotional banner</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-6">
-                    {/* Banner details */}
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
-                        <Input
-                          id="title"
-                          name="title"
-                          placeholder="Summer Sale Extravaganza"
-                          value={formData.title}
-                          onChange={handleInputChange}
-                          required
-                          className="bg-background/50"
-                        />
-                      </div>
+        <TabsContent value="create" className="max-w-4xl mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Simple Header */}
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold text-foreground">Create Your Banner</h2>
+              <p className="text-muted-foreground">Let's make something amazing together</p>
+            </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
-                        <Textarea
-                          id="description"
-                          name="description"
-                          placeholder="Save up to 60% on seasonal items! Limited time offer."
-                          value={formData.description}
-                          onChange={handleInputChange}
-                          required
-                          className="bg-background/50 min-h-[100px]"
-                        />
-                      </div>
+            {/* Step-by-step Layout */}
+            {/* Step 1: Upload Image */}
+            <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-full mb-3">
+                  <span className="text-white font-bold text-lg">1</span>
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">Add Your Banner Image</h3>
+                <p className="text-muted-foreground">The star of your campaign</p>
+              </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="link_url">Link URL</Label>
-                        <Input
-                          id="link_url"
-                          name="link_url"
-                          placeholder="https://example.com/summer-sale"
-                          value={formData.link_url}
-                          onChange={handleInputChange}
-                          className="bg-background/50"
-                        />
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Status, priority, and audience */}
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="status">Status</Label>
-                          <Select
-                            value={formData.status as string}
-                            onValueChange={(value) => handleSelectChange("status", value)}
-                          >
-                            <SelectTrigger className="bg-background/50">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Active">Active</SelectItem>
-                              <SelectItem value="Inactive">Inactive</SelectItem>
-                              <SelectItem value="Scheduled">Scheduled</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="priority">Priority (0-100)</Label>
-                          <Input
-                            id="priority"
-                            name="priority"
-                            type="number"
-                            value={formData.priority}
-                            onChange={handleNumberChange}
-                            className="bg-background/50"
-                            min="0"
-                            max="100"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="target_audience">Target Audience</Label>
-                        <Select
-                          value={formData.target_audience as string}
-                          onValueChange={(value) => handleSelectChange("target_audience", value)}
-                        >
-                          <SelectTrigger className="bg-background/50">
-                            <SelectValue placeholder="Select audience" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ALL">All Users</SelectItem>
-                            <SelectItem value="REGISTERED">Registered Users</SelectItem>
-                            <SelectItem value="GUEST">Guest Users</SelectItem>
-                            <SelectItem value="PREMIUM">Premium Users</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Date selection */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Start Date</Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="w-full justify-start text-left font-normal bg-background/50"
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {startDate ? format(startDate, "PPP") : "Select date"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              <Calendar
-                                mode="single"
-                                selected={startDate}
-                                onSelect={(date) => setStartDate(date || new Date())}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label>End Date</Label>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="w-full justify-start text-left font-normal bg-background/50"
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {endDate ? format(endDate, "PPP") : "Select date"}
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              <Calendar
-                                mode="single"
-                                selected={endDate}
-                                onSelect={(date) => setEndDate(date || new Date())}
-                                initialFocus
-                                disabled={(date) => date < startDate}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                      </div>
-                    </div>
+              {!previewUrl ? (
+                <div
+                  className="border-2 border-dashed border-primary/40 rounded-xl p-12 bg-white/50 hover:bg-white/70 transition-all duration-300 cursor-pointer group text-center"
+                  onClick={() => document.getElementById('banner-image')?.click()}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add('border-primary', 'bg-white/80');
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('border-primary', 'bg-white/80');
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('border-primary', 'bg-white/80');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                      const event = { target: { files } } as any;
+                      handleFileChange(event);
+                    }
+                  }}
+                >
+                  <div className="group-hover:scale-105 transition-transform duration-300">
+                    <UploadCloud className="w-20 h-20 text-primary mx-auto mb-4" />
                   </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Banner Image <span className="text-red-500">*</span></Label>
-                      <div className="border-2 border-dashed rounded-lg p-4 hover:border-primary/50 transition-colors">
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <div className="h-48 w-full bg-background/50 rounded-md overflow-hidden">
-                            {previewUrl ? (
-                              <img
-                                src={previewUrl}
-                                alt="Banner preview"
-                                className="w-full h-full object-contain"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center">
-                                <UploadCloud className="h-10 w-10 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground mt-2">
-                                  Upload banner image
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                          <div className="w-full">
-                            <Label htmlFor="banner-image" className="cursor-pointer w-full">
-                              <div className="flex items-center justify-center w-full py-2 px-4 rounded-md bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors">
-                                <UploadCloud className="h-4 w-4 mr-2 text-primary" />
-                                <span className="text-sm font-medium">
-                                  {selectedFile ? "Change image" : "Select image"}
-                                </span>
-                              </div>
-                            </Label>
-                            <Input
-                              id="banner-image"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleFileChange}
-                              className="hidden"
-                              required={!formData.image_url}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Recommended: 1200x400 pixels, JPG or PNG format
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="image_url">Image URL</Label>
-                      <Input
-                        id="image_url"
-                        name="image_url"
-                        placeholder="https://example.com/banners/image.jpg"
-                        value={formData.image_url}
-                        onChange={handleInputChange}
-                        className="bg-background/50"
-                        disabled={!!selectedFile}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        {selectedFile ? "URL will be auto-generated after upload" : "Or provide a direct URL to an image"}
-                      </p>
-                    </div>
+                  <h4 className="text-lg font-semibold text-foreground mb-2">Drop your image here</h4>
+                  <p className="text-muted-foreground mb-6">or click to browse from your computer</p>
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 text-base"
+                  >
+                    Choose Image
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-4">
+                    Best size: 1200×400px • JPG, PNG up to 5MB
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="relative rounded-xl overflow-hidden bg-white shadow-lg">
+                    <img
+                      src={previewUrl}
+                      alt="Banner preview"
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('banner-image')?.click()}
+                      className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-700 rounded-full p-2 transition-colors"
+                    >
+                      <UploadCloud className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-primary">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                    <span className="text-sm font-medium">Perfect! Your image looks great</span>
                   </div>
                 </div>
+              )}
 
-                <Separator />
+              <Input
+                id="banner-image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                required={!formData.image_url}
+              />
+            </div>
 
-                <div className="flex justify-end pt-4">
+            {/* Step 2: Basic Details */}
+            <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-muted rounded-full mb-3">
+                  <span className="text-muted-foreground font-bold text-lg">2</span>
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">Tell Us About Your Banner</h3>
+                <p className="text-muted-foreground">Just the essentials</p>
+              </div>
+
+              <div className="max-w-2xl mx-auto space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-base font-medium">What's your banner about?</Label>
+                  <Input
+                    id="title"
+                    name="title"
+                    placeholder="e.g., Summer Sale - Up to 50% Off!"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className="h-12 text-base"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-base font-medium">Add a description</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    placeholder="Tell customers what makes this special..."
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="min-h-[100px] text-base"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="link_url" className="text-base font-medium">Where should this link to? (optional)</Label>
+                  <Input
+                    id="link_url"
+                    name="link_url"
+                    placeholder="https://your-store.com/sale"
+                    value={formData.link_url}
+                    onChange={handleInputChange}
+                    className="h-12 text-base"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3: Schedule */}
+            <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-muted rounded-full mb-3">
+                  <span className="text-muted-foreground font-bold text-lg">3</span>
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">When should it run?</h3>
+                <p className="text-muted-foreground">Set your campaign dates</p>
+              </div>
+
+              <div className="max-w-md mx-auto grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Start Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal h-12"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "MMM dd") : "Pick date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => date && setStartDate(date)}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">End Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal h-12"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "MMM dd") : "Pick date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => date && setEndDate(date)}
+                        initialFocus
+                        disabled={(date) => date < startDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+
+            {/* Final Submit Button */}
+
+                <div className="flex items-center justify-between pt-6 border-t border-border">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {selectedFile && (
+                      <span className="text-primary font-medium">
+                        ✓ Banner image ready
+                      </span>
+                    )}
+                  </div>
                   <Button
                     type="submit"
-                    className="bg-gradient-to-r from-violet-500 to-indigo-600"
-                    disabled={uploading}
+                    size="lg"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
+                    disabled={uploading || (!selectedFile && !formData.image_url)}
                   >
                     {uploading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Uploading...
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Creating Banner...
                       </>
+                    ) : !selectedFile && !formData.image_url ? (
+                      'Add Banner Image First'
                     ) : (
                       <>
-                        <Plus className="mr-2 h-4 w-4" />
+                        <Plus className="mr-2 h-5 w-5" />
                         Create Banner
                       </>
                     )}
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </form>
+            </form>
         </TabsContent>
       </Tabs>
     </div>

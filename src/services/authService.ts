@@ -67,10 +67,12 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
-  name: string
   email: string
   password: string
-  confirmPassword: string
+  first_name: string
+  last_name: string
+  phone_number: string
+  role_id: string
 }
 
 export interface RegisterResponse {
@@ -131,12 +133,10 @@ export class AuthService {
   static async register(userData: RegisterRequest): Promise<RegisterResponse> {
     try {
       const response = await apiMethods.post<RegisterResponse>('/auth/register', userData)
-      
-      // Set auth token in axios instance and localStorage
-      if (response.token) {
-        setAuthToken(response.token)
-      }
-      
+
+      // Don't set auth token when creating users as admin
+      // The admin remains logged in with their own token
+
       return response
     } catch (error) {
       throw handleApiError(error)

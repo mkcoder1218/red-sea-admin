@@ -10,6 +10,7 @@ import PersistLoader from '@/components/PersistLoader';
 import AuthProvider from '@/components/AuthProvider';
 import AuthenticatedLayout from '@/components/AuthenticatedLayout';
 import AuthGuard from '@/components/AuthGuard';
+import { ThemeProvider } from '@/components/theme-provider';
 import Dashboard from "./pages/Dashboard";
 import DebugDashboard from "./components/DebugDashboard";
 import Analytics from "./pages/Analytics";
@@ -26,14 +27,15 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <Provider store={store}>
-    <PersistGate loading={<PersistLoader />} persistor={persistor}>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+  <ThemeProvider defaultTheme="system" storageKey="red-sea-theme">
+    <Provider store={store}>
+      <PersistGate loading={<PersistLoader />} persistor={persistor}>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
               <AuthGuard>
                 <Routes>
                   {/* Public routes */}
@@ -54,13 +56,14 @@ const App = () => (
                     <Route path="*" element={<NotFound />} />
                   </Route>
                 </Routes>
-              </AuthGuard>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </AuthProvider>
-    </PersistGate>
-  </Provider>
+                </AuthGuard>
+              </BrowserRouter>
+            </TooltipProvider>
+          </QueryClientProvider>
+        </AuthProvider>
+      </PersistGate>
+    </Provider>
+  </ThemeProvider>
 );
 
 export default App;

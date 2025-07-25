@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar"
 import { Button } from "@/components/ui/button"
 import { LogOut } from 'lucide-react'
+import { ThemeToggle } from "@/components/theme-toggle"
 import PersistLoader from './PersistLoader'
 
 /**
@@ -47,17 +48,20 @@ const AuthenticatedLayout: React.FC = () => {
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <main className="flex-1 flex flex-col">
-          <header className="border-b border-border p-4 glass-effect">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="p-2 hover:bg-accent rounded-lg transition-colors" />
-              <div className="flex-1">
-                <h1 className="text-xl font-semibold text-foreground">Red sea </h1>
-                <p className="text-sm text-muted-foreground">Manage your B2C Red sea </p>
+          <header className="border-b border-border bg-card">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger className="p-2 hover:bg-accent rounded-md transition-colors" />
+                <div>
+                  <h1 className="text-xl font-semibold text-foreground">Red Sea Market</h1>
+                  <p className="text-sm text-muted-foreground">Admin Dashboard</p>
+                </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="text-sm text-muted-foreground">
+                <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
                   Welcome, {user.first_name} {user.last_name}
                 </div>
+                <ThemeToggle />
                 <Button
                   variant="outline"
                   size="sm"
@@ -70,7 +74,7 @@ const AuthenticatedLayout: React.FC = () => {
               </div>
             </div>
           </header>
-          <div className="flex-1 p-6 overflow-auto bg-background">
+          <div className="flex-1 p-6 overflow-auto">
             <Outlet />
           </div>
         </main>

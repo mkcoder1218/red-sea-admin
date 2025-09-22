@@ -237,14 +237,10 @@ const Products = () => {
     // Get the path
     let path = primaryImage.file.path;
     
-    // If it's already a complete URL, return it as is
     if (path.startsWith('http')) {
       return path;
     }
-    
-    // If it doesn't already include the processpath
     if (!path.includes('/processpath/')) {
-      // Replace backslashes with forward slashes
       path = path.replace(/\\/g, '/');
       
       // Get the API base URL from config
@@ -904,7 +900,7 @@ const Products = () => {
                   const stockStatus = getStockStatus(product.stock);
                   const productStatus = getProductStatus(product);
                   const primaryImage = getPrimaryImage(product);
-
+console.log("Primary image URL:", primaryImage);
                   return (
                     <div key={product.id} className="flex items-center justify-between p-4 rounded-lg bg-card border border-border hover:shadow-md transition-shadow">
                       <div className="flex items-center gap-4">

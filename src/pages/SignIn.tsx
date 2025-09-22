@@ -25,6 +25,7 @@ const SignIn = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [localError, setLocalError] = useState('')
+  const [isResendingVerification, setIsResendingVerification] = useState(false)
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -73,7 +74,15 @@ const SignIn = () => {
       if (error.message?.includes('fetch')) {
         errorMessage = 'Cannot connect to server. Please check if your backend is running.'
       } else if (error.response?.status === 401) {
-        errorMessage = 'Invalid email or password.'
+        // Check for specific error messages from the API
+        const apiErrors = error.response?.data?.error?.errors
+        if (apiErrors && Array.isArray(apiErrors) && apiErrors.length > 0) {
+          errorMessage = apiErrors[0] // Use the first error message
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message
+        } else {
+          errorMessage = 'Invalid email or password.'
+        }
       } else if (error.response?.status === 500) {
         errorMessage = 'Server error. Please try again later.'
       } else if (error.message) {
@@ -82,6 +91,26 @@ const SignIn = () => {
 
       dispatch(loginFailure(errorMessage))
       setLocalError(errorMessage)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    if (!formData.email) {
+      setLocalError('Please enter your email address first')
+      return
+    }
+
+    try {
+      setIsResendingVerification(true)
+      setLocalError('')
+      
+      await AuthService.resendVerification()
+      setLocalError('Verification email sent! Please check your inbox.')
+    } catch (error: any) {
+      console.error('Resend verification error:', error)
+      setLocalError('Failed to send verification email. Please try again.')
+    } finally {
+      setIsResendingVerification(false)
     }
   }
 
@@ -116,9 +145,30 @@ const SignIn = () => {
               </CardHeader>
           <CardContent className="space-y-4">
             {displayError && (
-              <Alert variant="destructive">
+              <Alert variant={displayError.includes('Verification email sent') ? 'default' : 'destructive'}>
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{displayError}</AlertDescription>
+                <AlertDescription className="flex flex-col space-y-2">
+                  <span>{displayError}</span>
+                  {displayError.includes('Email not yet verified') && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResendVerification}
+                      disabled={isResendingVerification || isLoading}
+                      className="w-fit"
+                    >
+                      {isResendingVerification ? (
+                        <>
+                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Resend Verification Email'
+                      )}
+                    </Button>
+                  )}
+                </AlertDescription>
               </Alert>
             )}
 

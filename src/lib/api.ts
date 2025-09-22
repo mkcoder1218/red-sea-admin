@@ -8,7 +8,6 @@ const BASE_URL = config.api.baseUrl
 // Create axios instance with default configuration
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: config.api.timeout,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -2,8 +2,7 @@
 export const config = {
   // API Configuration
   api: {
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://read-sea-api.onrender.com',
-    timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '60000'),
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://api.redseamart.et',
   },
   
   // App Configuration

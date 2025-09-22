@@ -909,6 +909,8 @@ console.log("Primary image URL:", primaryImage);
                             <img
                               src={primaryImage}
                               alt={product.name}
+                                  crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
                               className="w-full h-full object-cover"
                             />
                           ) : (

@@ -222,7 +222,7 @@ const Delivery = () => {
                       View Map
                     </Button>
                     <Button variant="outline" size="sm" className="glass-effect">
-                      <Package className="w-4 h-4 mr-2" />
+                      <img src="/public/logo.png" alt="Package" className="w-4 h-4 mr-2" />
                       Order Details
                     </Button>
                   </div>

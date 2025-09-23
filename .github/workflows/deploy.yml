@@ -1,0 +1,29 @@
+name: Deploy to VPS via SSH
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}       
+          username: ${{ secrets.SERVER_USER }}    # VPS username (e.g., root)
+          key: ${{ secrets.SSH_PRIVATE_KEY }}      # private key you added as secret
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            set -e
+            cd ~/red-sea-website || git clone git@github.com:mkcoder1218/red-sea-website.git ~/red-sea-website && cd ~/red-sea-website
+            git fetch --all
+            git reset --hard origin/main
+            npm ci --legacy-peer-deps  
+            npm run build
+            pm2 restart admin-vite || pm2 start npm --name "admin-vite" -- start

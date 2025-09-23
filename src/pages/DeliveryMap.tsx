@@ -182,7 +182,7 @@ const DeliveryMap = () => {
         <Card className="glass-effect border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Package className="w-5 h-5 text-purple-500" />
+              <img src="/public/logo.png" alt="Package" className="w-5 h-5" />
               Delivery Details
             </CardTitle>
             <CardDescription>Information about selected delivery</CardDescription>

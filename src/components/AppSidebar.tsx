@@ -95,7 +95,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border px-6 py-5">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-sm">
-            <Package className="w-5 h-5 text-primary-foreground" />
+            <img src="/public/logo.png" alt="Red Sea Market" className="w-5 h-5" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-sidebar-foreground tracking-tight">Red Sea Market</h2>

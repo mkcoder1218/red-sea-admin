@@ -75,6 +75,18 @@ export interface CreateProductRequest {
   isActive?: boolean
 }
 
+// Product update request (for /products endpoint with flattened payload)
+export interface ProductUpdateRequest {
+  id: string
+  name: string
+  description: string
+  price: string
+  stock: number
+  featured: boolean
+  trending: boolean
+  category_id: string
+}
+
 // Product registration request (for /products/register endpoint)
 export interface ProductRegistrationRequest {
   product: {
@@ -247,20 +259,20 @@ export class ProductService {
     }
   }
 
-  // Update product
-  static async updateProduct(id: string, productData: UpdateProductRequest): Promise<Product> {
+  // Update product using PUT /products with id in payload
+  static async updateProduct(productData: ProductUpdateRequest): Promise<ProductRegistrationResponse> {
     try {
-      const product = await apiMethods.put<Product>(`/products/${id}`, productData)
-      return processImageUrls(product) as Product
+      const response = await apiMethods.put<ProductRegistrationResponse>('/products', productData);
+      return response;
     } catch (error) {
-      throw handleApiError(error)
+      throw handleApiError(error);
     }
   }
 
   // Delete product
   static async deleteProduct(id: string): Promise<{ message: string }> {
     try {
-      return await apiMethods.delete(`/products/${id}`)
+      return await apiMethods.delete('/products', { data: { id } })
     } catch (error) {
       throw handleApiError(error)
     }

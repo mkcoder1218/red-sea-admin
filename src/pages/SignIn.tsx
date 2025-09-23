@@ -122,7 +122,7 @@ const SignIn = () => {
         {/* Logo and Branding */}
         <div className="text-center space-y-2">
           <div className="mx-auto w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-lg">
-            <Package className="w-8 h-8 text-primary-foreground" />
+            <img src="/public/logo.png" alt="Red Sea Market" className="w-8 h-8" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Red Sea Market</h1>
           <p className="text-muted-foreground">Sign in to your admin panel</p>

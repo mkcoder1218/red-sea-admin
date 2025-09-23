@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { AuthService, DashboardService } from "@/services";
 import { useEffect } from "react";
-import { useApi } from "@/hooks/useApi";
+import { useApi, useApiQuery } from "@/hooks/useApi";
 
 const Dashboard = () => {
   const dispatch = useAppDispatch()
@@ -19,10 +19,9 @@ const Dashboard = () => {
     loading: statsLoading,
     error: statsError,
     execute: fetchDashboardStats
-  } = useApi(DashboardService.getDashboardStats, {
+  } = useApiQuery(DashboardService.getDashboardStats, [], {
     loadingKey: 'fetchDashboardStats',
-    showErrorNotification: true,
-    executeImmediately: true
+    showErrorNotification: true
   });
 
   // Debug the API response
@@ -119,7 +118,7 @@ const Dashboard = () => {
         <Card className="card-simple hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-primary" />
+            <img src="/public/logo.png" alt="Products" className="h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">

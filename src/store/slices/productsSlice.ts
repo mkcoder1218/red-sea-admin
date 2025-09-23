@@ -10,11 +10,21 @@ export const fetchProducts = createAsyncThunk(
   }
 )
 
+// Async thunk for deleting a product
+export const deleteProduct = createAsyncThunk(
+  'products/deleteProduct',
+  async (id: string) => {
+    await ProductService.deleteProduct(id)
+    return id
+  }
+)
+
 // Products state interface
 interface ProductsState {
   products: Product[]
   loading: boolean
   error: string | null
+  deleting: string | null // ID of product being deleted
   pagination: {
     currentPage: number
     totalCount: number
@@ -37,6 +47,7 @@ const initialState: ProductsState = {
   products: [],
   loading: false,
   error: null,
+  deleting: null,
   pagination: {
     currentPage: 1,
     totalCount: 0,
@@ -105,6 +116,11 @@ const productsSlice = createSlice({
     // Clear error
     clearError: (state) => {
       state.error = null
+    },
+    
+    // Clear deleting state
+    clearDeleting: (state) => {
+      state.deleting = null
     }
   },
   extraReducers: (builder) => {
@@ -123,6 +139,22 @@ const productsSlice = createSlice({
         state.loading = false
         state.error = action.error.message || 'Failed to fetch products'
       })
+      .addCase(deleteProduct.pending, (state, action) => {
+        state.deleting = action.meta.arg
+        state.error = null
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.deleting = null
+        // Remove the deleted product from the list
+        state.products = state.products.filter(product => product.id !== action.payload)
+        // Update total count
+        state.pagination.totalCount = Math.max(0, state.pagination.totalCount - 1)
+        state.pagination.totalPages = Math.ceil(state.pagination.totalCount / state.pagination.pageSize)
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.deleting = null
+        state.error = action.error.message || 'Failed to delete product'
+      })
   }
 })
 
@@ -136,7 +168,8 @@ export const {
   setPriceRange,
   setSorting,
   resetFilters,
-  clearError
+  clearError,
+  clearDeleting
 } = productsSlice.actions
 
 export default productsSlice.reducer

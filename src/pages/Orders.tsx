@@ -122,7 +122,7 @@ const Orders = () => {
           <p className="text-muted-foreground">Track and manage all Red sea  orders</p>
         </div>
         <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700">
-          <Package className="w-4 h-4 mr-2" />
+          <img src="/public/logo.png" alt="Orders" className="w-4 h-4 mr-2" />
           New Order
         </Button>
       </div>
@@ -199,7 +199,7 @@ const Orders = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                        <Package className="w-6 h-6 text-white" />
+                        <img src="/public/logo.png" alt="Package" className="w-6 h-6" />
                       </div>
                       <div>
                         <h4 className="font-bold text-lg">{order.order_number}</h4>

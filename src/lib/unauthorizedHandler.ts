@@ -63,12 +63,7 @@ export const handleUnauthorized = async (showNotification = true) => {
     }
     
     // Small delay to allow state updates
-    setTimeout(() => {
-      // Redirect to login page
-      if (typeof window !== 'undefined') {
-        window.location.href = '/signin'
-      }
-    }, 100)
+
     
   } catch (error) {
     console.error('Error during unauthorized handling:', error)

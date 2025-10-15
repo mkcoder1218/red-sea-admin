@@ -57,7 +57,7 @@ const SignIn = () => {
       dispatch(loginStart())
 
       const response = await AuthService.login({
-        email: formData.email,
+        phone_number: formData.email,
         password: formData.password
       })
 
@@ -181,7 +181,7 @@ const SignIn = () => {
                   <Input
                     id="email"
                     name="email"
-                    type="email"
+                    type="text"
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleInputChange}

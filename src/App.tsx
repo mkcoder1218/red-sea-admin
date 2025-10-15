@@ -23,6 +23,7 @@ import Settings from "./pages/Settings";
 import Banners from "./pages/Banners";
 import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
+import CategoriesPage from "./pages/category";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
                     <Route path="map" element={<DeliveryMap />} />
                     <Route path="banners" element={<Banners />} />
                     <Route path="settings" element={<Settings />} />
+                    <Route path="categories" element={<CategoriesPage />} />
                     <Route path="*" element={<NotFound />} />
                   </Route>
                 </Routes>

@@ -50,6 +50,11 @@ const menuItems = [
     icon: Package2,
   },
   {
+    title: "Categories",
+    url: "/categories",
+    icon: Package2,
+  },
+  {
     title: "Order Management",
     url: "/orders",
     icon: Package,
@@ -129,16 +134,16 @@ export function AppSidebar() {
                       }`}>
                         <item.icon className="w-5 h-5" />
                       </div>
-                      <span className={`font-medium text-sm transition-colors ${
+                      <span className={`font-medium text-nowrap text-sm transition-colors ${
                         location.pathname === item.url
                           ? 'text-primary-foreground'
                           : 'text-sidebar-foreground'
                       }`}>
                         {item.title}
                       </span>
-                      {location.pathname === item.url && (
+                      {/* {location.pathname === item.url && (
                         <div className="absolute right-3 w-1.5 h-1.5 bg-primary-foreground rounded-full" />
-                      )}
+                      )} */}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

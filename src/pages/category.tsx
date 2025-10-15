@@ -158,29 +158,22 @@ console.log('apiclient--->',axiosClient)
                   <TableCell>{cat.description}</TableCell>
                   <TableCell>
                   <TableCell>
-  <div
-    className="w-10 h-10 flex items-center justify-center rounded"
-    style={{ background: cat.backgroundColor || "transparent" }}
-  >
-    {cat.icon && (
-      <div
-        className="w-6 h-6"
-        dangerouslySetInnerHTML={{
-          __html: cat.icon
-            // Remove existing width/height
-            .replace(/(width|height)="[^"]*"/g, "")
-            // Replace all stroke and fill colors with cat.color
-            .replace(/stroke="[^"]*"/g, `stroke="${cat.color || 'currentColor'}"`)
-            .replace(/fill="[^"]*"/g, `fill="${cat.color || 'currentColor'}"`)
-            // Make SVG scale to container
-            .replace(
-              "<svg",
-              '<svg class="w-full h-full" preserveAspectRatio="xMidYMid meet"'
-            ),
-        }}
-      />
-    )}
-  </div>
+                    <div className={`p-2 rounded-sm bg-[${cat?.backgroundColor}]`}  style={{ backgroundColor: cat?.backgroundColor || 'transparent' }}>
+ <div
+      className="w-6 h-6"
+      dangerouslySetInnerHTML={{
+        __html: cat.icon
+          // Remove width/height
+          .replace(/(width|height)="[^"]*"/g, "")
+          // Only replace fill if not "none"
+          .replace(/fill="(?!none)[^"]*"/g, `fill="${cat.color || 'currentColor'}"`)
+          // Only replace stroke if not "none"
+          .replace(/stroke="(?!none)[^"]*"/g, `stroke="${cat.color || 'currentColor'}"`)
+          // Add full size scaling
+          .replace('<svg', '<svg class="w-full h-full" preserveAspectRatio="xMidYMid meet"'),
+      }}
+    />
+</div>
 </TableCell>
 
                   </TableCell>

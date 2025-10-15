@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Eye, EyeOff, Mail, Lock, Package, Loader2, AlertCircle } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, Package, Loader2, AlertCircle, Phone } from "lucide-react"
 import ApiConnectionTest from '@/components/ApiConnectionTest'
 
 const SignIn = () => {
@@ -131,10 +131,7 @@ const SignIn = () => {
         {/* Sign In Form */}
         <Card className="card-simple shadow-lg">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="test">Test Connection</TabsTrigger>
-            </TabsList>
+   
 
             <TabsContent value="login">
               <CardHeader className="space-y-1">
@@ -175,14 +172,14 @@ const SignIn = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">Phone number</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="email"
                     name="email"
                     type="text"
-                    placeholder="Enter your email"
+                    placeholder="Enter your phone number"
                     value={formData.email}
                     onChange={handleInputChange}
                     className="pl-10 bg-background/50"
@@ -237,35 +234,11 @@ const SignIn = () => {
               </Button>
             </form>
 
-            {/* Demo Credentials Info */}
-            <div className="text-center text-sm space-y-2">
-              <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-                <p className="text-primary font-medium mb-1">Demo Account</p>
-                <p className="text-xs text-muted-foreground">
-                  Email: {config.demo.email}<br />
-                  Password: {config.demo.password}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setFormData({
-                  email: config.demo.email,
-                  password: config.demo.password
-                })}
-                className="text-primary hover:text-primary/80 text-xs underline"
-                disabled={isLoading}
-              >
-                Use demo credentials
-              </button>
-            </div>
+     
           </CardContent>
             </TabsContent>
 
-            <TabsContent value="test">
-              <div className="p-6">
-                <ApiConnectionTest />
-              </div>
-            </TabsContent>
+         
           </Tabs>
         </Card>
 

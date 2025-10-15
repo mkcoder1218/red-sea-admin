@@ -157,7 +157,7 @@ const SignIn = () => {
                     >
                       {isResendingVerification ? (
                         <>
-                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          <LAdd New Useroader2 className="mr-2 h-3 w-3 animate-spin" />
                           Sending...
                         </>
                       ) : (

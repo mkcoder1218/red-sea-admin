@@ -16,7 +16,7 @@ interface AddUserModalProps {
 }
 
 interface UserFormData {
-  email: string;
+
   password: string;
   first_name: string;
   last_name: string;
@@ -30,7 +30,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange, onUserA
   const [roles, setRoles] = useState<Role[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
   const [formData, setFormData] = useState<UserFormData>({
-    email: "",
+
     password: "",
     first_name: "",
     last_name: "",
@@ -75,7 +75,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange, onUserA
     e.preventDefault();
     
     // Validation
-    if (!formData.email || !formData.password || !formData.first_name || !formData.last_name || !formData.role_id) {
+    if (!formData.password || !formData.first_name || !formData.last_name || !formData.role_id) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields.",
@@ -84,22 +84,12 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange, onUserA
       return;
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter a valid email address.",
-        variant: "destructive"
-      });
-      return;
-    }
-
+    
     // Password validation
-    if (formData.password.length < 8) {
+    if (formData.password.length < 5) {
       toast({
         title: "Validation Error",
-        description: "Password must be at least 8 characters long.",
+        description: "Password must be at least 5 characters long.",
         variant: "destructive"
       });
       return;
@@ -118,7 +108,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange, onUserA
       
       // Reset form
       setFormData({
-        email: "",
+
         password: "",
         first_name: "",
         last_name: "",
@@ -184,7 +174,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange, onUserA
           </div>
 
           {/* Email */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="email">Email Address *</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -199,7 +189,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ open, onOpenChange, onUserA
                 required
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Password */}
           <div className="space-y-2">

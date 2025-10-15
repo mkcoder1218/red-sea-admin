@@ -75,13 +75,13 @@ export class UserService {
     try {
       // Use setupParams from utils.ts to format the query parameters
       const queryParams = setupParams({
-        keys: ['email', 'first_name', 'last_name', 'type', 'status'],
+        keys: ['first_name', 'last_name'],
         pagination: {
           page: params.page || 1,
           pageSize: params.limit || 10
         },
         searchQuery: params.search,
-        sortState: params.sortBy ? [{ key: params.sortBy, state: params.sortOrder || 'ASC' }] : undefined
+      sortState: params.sortBy ? [{ key: params.sortBy, state: params.sortOrder || 'ASC' }] : undefined
       });
 
       const queryParamString = jsonToUriParam(queryParams);
@@ -148,7 +148,7 @@ export class UserService {
   // Activate/Deactivate user
   static async updateUserStatus(id: string, status: string): Promise<UserData> {
     try {
-      const response = await apiMethods.patch<{ status: number; message: string; data: UserData }>(`/users/${id}/status`, { status });
+      const response = await apiMethods.put<{ status: number; message: string; data: UserData }>(`/users`, { id,status });
       return response.data;
     } catch (error) {
       throw handleApiError(error);
